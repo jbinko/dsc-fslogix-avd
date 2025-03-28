@@ -7,6 +7,23 @@ This is DSC provider to configure registry keys for FSLogix
 Compress-Archive -Path "./dsc-fslogix-avd.ps1" -DestinationPath "FSLogixAVD.zip" -CompressionLevel "Optimal"
 ```
 
+## Usage
+
+```PowerShell
+$json =  @'
+{
+    "ModulesUrl": "https://github.com/jbinko/dsc-fslogix-avd/raw/main/FSLogixAVD.zip",
+    "ConfigurationFunction": "dsc-fslogix-avd.ps1\\FSLogixAVD",
+    "Properties": {
+        "CCDLocationsProfiles": "type=smb,name=\"eu\",connectionString=\\\\nfeu-bd09.myfsl.local\\fsl\\Profiles;type=smb,name=\"eus\",connectionString=\\\\nfeus-551d.myfsl.local\\fsl\\Profiles;type=smb,name=\"wus\",connectionString=\\\\nfwus-48b2.myfsl.local\\fsl\\Profiles", 
+        "CCDLocationsODFC": "type=smb,name=\"eu\",connectionString=\\\\nfeu-bd09.myfsl.local\\fsl\\ODFC;type=smb,name=\"eus\",connectionString=\\\\nfeus-551d.myfsl.local\\fsl\\ODFC;type=smb,name=\"wus\",connectionString=\\\\nfwus-48b2.myfsl.local\\fsl\\ODFC"
+    }
+}
+'@
+
+az vm extension set --name DSC --publisher Microsoft.Powershell --version 2.77 --vm-name my_vm_name --resource-group my_rg_name --settings $json
+ ```
+
 ## Compile / Test (Not for Release)
 
 ```PowerShell

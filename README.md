@@ -1,6 +1,8 @@
 # dsc-fslogix-avd
 This is DSC provider to configure registry keys for FSLogix
 
+For FSLogix we cannot use DSC based Machine Config Policy because it has latencya and doesn't support dynamic configuration (identify region on the fly - that would require tag with region pass as parameter into the policy).:
+
 ## Release
 
 ```PowerShell

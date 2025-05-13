@@ -1,24 +1,31 @@
 Configuration FSLogixAuditAndInstall {
 
     param (
-        [String]
-        $CCDLocationsProfiles,
-        [String]
-        $CCDLocationsODFC,
+        [hashtable]
+        $RegionalProfiles = @{
+            SwedenCentral = @{
+                CCDLocation = 'NA'
+                ODFC = 'NA'
+            }
+        },
         [System.String]
         $ComputerName = 'localhost'
     )
 
     Import-DscResource -ModuleName 'PSDscResources'
+    
+    $json = Invoke-RestMethod -Headers @{"Metadata"="true"} -Method GET -Uri "http://169.254.169.254/metadata/instance?api-version=2021-02-01"
+    $location = $json[0].Compute.Location
 
     Node $ComputerName {
+
         ## HKEY_LOCAL_MACHINE\SOFTWARE\FSLogix\Profiles
 
         Registry CCDLocations {
             Key       = 'HKEY_LOCAL_MACHINE\SOFTWARE\FSLogix\Profiles'
             ValueName = 'CCDLocations'
             Ensure    = 'Present'
-            ValueData = $CCDLocationsProfiles
+            ValueData = $RegionalProfiles[$location]['CCDLocation']
             ValueType = 'String'
         }
 
@@ -132,7 +139,7 @@ Configuration FSLogixAuditAndInstall {
             Key       = 'HKEY_LOCAL_MACHINE\SOFTWARE\Policies\FSLogix\ODFC'
             ValueName = 'CCDLocations'
             Ensure    = 'Present'
-            ValueData = $CCDLocationsODFC
+            ValueData = $RegionalProfiles[$location]['ODFC']
             ValueType = 'String'
         }
 
